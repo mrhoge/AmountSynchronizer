@@ -6,10 +6,74 @@ from datetime import datetime
 
 # 認証
 auth.authenticate_user()
+creds, _ = default()
 gc = gspread.oauth()
 
 # スプレッドシート開く
 sh = gc.open('あなたのスプレッドシート名')
+
+# ===== 0. スプレッドシート所有者チェック =====
+print("【ステップ0】スプレッドシート所有者を確認中...")
+
+# 現在のユーザーのメールアドレスを取得
+try:
+    current_user_email = creds.id_token.get('email') if hasattr(creds, 'id_token') else None
+    if not current_user_email:
+        # OAuth2の場合は別の方法で取得
+        from google.oauth2.credentials import Credentials
+        if isinstance(creds, Credentials):
+            import requests
+            response = requests.get('https://www.googleapis.com/oauth2/v1/userinfo',
+                                  headers={'Authorization': f'Bearer {creds.token}'})
+            if response.status_code == 200:
+                current_user_email = response.json().get('email')
+
+    print(f"  現在のユーザー: {current_user_email}")
+except Exception as e:
+    print(f"⚠️  警告: 現在のユーザー情報を取得できませんでした: {str(e)}")
+    current_user_email = None
+
+# スプレッドシートの所有者を確認
+try:
+    permissions = sh.list_permissions()
+    owner_email = None
+
+    for permission in permissions:
+        if permission.get('role') == 'owner':
+            owner_email = permission.get('emailAddress')
+            break
+
+    print(f"  スプレッドシート所有者: {owner_email}")
+
+    # 所有者チェック
+    if current_user_email and owner_email:
+        if current_user_email.lower() != owner_email.lower():
+            print(f"\n❌ エラー: このスプレッドシートはあなたが所有していません")
+            print(f"   あなたのアカウント: {current_user_email}")
+            print(f"   スプレッドシート所有者: {owner_email}")
+            print(f"\n⚠️  セキュリティ上の理由から、自分が所有するスプレッドシートのみ処理できます。")
+            print(f"   このスプレッドシートは共有ファイルです。処理を中止します。")
+            exit()
+        else:
+            print(f"✓ 所有者確認完了: あなたが所有するスプレッドシートです\n")
+    else:
+        print(f"⚠️  警告: 所有者情報を完全に確認できませんでした")
+        print(f"   処理を続行しますか? (y/n): ", end="")
+        response = input().strip().lower()
+        if response != 'y':
+            print("❌ 処理を中止します。")
+            exit()
+        print()
+
+except Exception as e:
+    print(f"⚠️  警告: 所有者チェックに失敗しました: {str(e)}")
+    print(f"   処理を続行しますか? (y/n): ", end="")
+    response = input().strip().lower()
+    if response != 'y':
+        print("❌ 処理を中止します。")
+        exit()
+    print()
+
 input_sheet = sh.worksheet('入力シート')
 summary_sheet = sh.worksheet('実績管理シート')  # 実際のシート名に変更
 
