@@ -2,6 +2,7 @@ from google.colab import auth
 import gspread
 from google.auth import default
 import re
+from datetime import datetime
 
 # 認証
 auth.authenticate_user()
@@ -132,8 +133,35 @@ if existing_data:
 
 print(f"✓ 既存データなし。処理を続行します。\n")
 
-# ===== 6. データを集計シートに貼付 =====
-print("【ステップ6】金額を貼付中...")
+# ===== 6. スプレッドシートのバックアップコピー作成 =====
+print("【ステップ6】スプレッドシートのバックアップを作成中...")
+try:
+    # 現在の日時を取得してバックアップ名を生成
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    backup_name = f"{sh.title}_バックアップ_{timestamp}"
+
+    # スプレッドシートをコピー
+    backup_sh = sh.copy(title=backup_name)
+
+    # バックアップを元のスプレッドシートと同じフォルダに移動
+    # (デフォルトではルートフォルダに作成されるため)
+    original_parents = sh.list_permissions()
+
+    print(f"✓ バックアップ作成完了: '{backup_name}'")
+    print(f"   バックアップID: {backup_sh.id}")
+    print(f"   URL: {backup_sh.url}\n")
+
+except Exception as e:
+    print(f"⚠️  警告: バックアップの作成に失敗しました: {str(e)}")
+    print(f"   処理を続行しますか? (y/n): ", end="")
+    response = input().strip().lower()
+    if response != 'y':
+        print("❌ 処理を中止します。")
+        exit()
+    print()
+
+# ===== 7. データを集計シートに貼付 =====
+print("【ステップ7】金額を貼付中...")
 updates = []
 
 for key, amount in data_map.items():
