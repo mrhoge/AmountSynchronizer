@@ -193,15 +193,18 @@ def check_spreadsheet_owner(sh, creds):
 def main():
     """
     メイン処理
+
+    注意: このスクリプトを実行する前に、セル1で認証を完了してください。
+    セル1で定義された gc (gspreadクライアント) と creds (認証情報) を使用します。
     """
     print("=" * 60)
     print("Google スプレッドシート自動化ツール")
     print("=" * 60)
     print()
 
-    # 認証情報を取得（別セルで認証済みを想定）
-    creds, _ = default()
-    gc = gspread.oauth()
+    # セル1で定義されたグローバル変数を使用
+    # gc と creds はセル1の認証処理で作成済みを想定
+    global gc, creds
 
     # スプレッドシートを検索・選択
     sh = select_spreadsheet(gc)
@@ -381,5 +384,10 @@ def main():
     print("=" * 60)
 
 
+# Google Colabでの実行
+# セル2にこのファイルの内容を貼り付けた後、以下の行を実行してください
 if __name__ == "__main__":
     main()
+
+# または、Google Colabのセルでは以下のように直接呼び出すこともできます:
+# main()
