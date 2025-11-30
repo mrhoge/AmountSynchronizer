@@ -200,9 +200,8 @@ def main():
     print("=" * 60)
     print()
 
-    # 認証情報を取得（別セルで認証済みを想定）
-    creds, _ = default()
-    gc = gspread.oauth()
+    # セル1で作成した gc と creds を使用
+    global gc, creds
 
     # スプレッドシートを検索・選択
     sh = select_spreadsheet(gc)
