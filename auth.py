@@ -3,6 +3,18 @@ Google Colab 認証セル用スクリプト
 
 このファイルの内容を Google Colab の最初のセル（セル1）に貼り付けて実行します。
 認証が完了すると、後続のセルで gspread を使用できるようになります。
+
+Copyright (C) 2023-2025 mrhoge
+
+This file is part of AmountSynchronizer.
+
+InvoiceRenamer is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed WITHOUT ANY WARRANTY; for more details see
+the LICENSE file in the distribution root.
 """
 
 # ユーザー認証情報を取得します

@@ -11,6 +11,18 @@ Google スプレッドシート自動化ツール - メイン処理
 注意:
 - Colabに再接続した場合は、必ずセル1（認証）から実行してください
 - このスクリプトは自分が所有するスプレッドシートのみ処理できます
+
+Copyright (C) 2023-2025 mrhoge
+
+This file is part of AmountSynchronizer.
+
+InvoiceRenamer is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed WITHOUT ANY WARRANTY; for more details see
+the LICENSE file in the distribution root.
 """
 
 import gspread
